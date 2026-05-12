@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 from datetime import datetime
 import glob
 from PIL import Image
-
+from pathlib import Path
 # ===========================
 # imports
 # ===========================
@@ -35,13 +35,18 @@ with st.sidebar:
 # ==========================================
 # 1. CARGA Y PROCESAMIENTO DE DATOS
 # ==========================================
+DIRECTORIO_ACTUAL = Path(__file__).parent
+RAIZ_PROYECTO = DIRECTORIO_ACTUAL.parent
 @st.cache_data
 def cargar_datos():
     # 1. Cargar todas las observaciones
-    df_obs_full = pd.read_csv('data/tkg_hummingbirds_research_grade.csv')
+    RUTA_OBSERVACIONES = RAIZ_PROYECTO / 'data' / 'tkg_hummingbirds_research_grade.csv'
+    RUTA_COLORES = RAIZ_PROYECTO / 'data' / 'color_dictionary_hbw_wikidata.csv'
+
+    df_obs_full = pd.read_csv(RUTA_OBSERVACIONES)
 
     # 2. Cargar el Diccionario HBW respetando sus encabezados
-    df_colors = pd.read_csv('data/color_dictionary_hbw_wikidata.csv')
+    df_colors = pd.read_csv(RUTA_COLORES)
 
     # Renombramos 'hbw_name' a 'color_name' para que el resto del código visual funcione sin cambios
     df_colors.rename(columns={'hbw_name': 'color_name'}, inplace=True)
@@ -164,7 +169,7 @@ with col_visor:
     with c3:
         st.button("Siguiente Especie ➡️", on_click=especie_siguiente, width='stretch')
 
-    img = Image.open('/home/t0r120/bioScripts/hummingBirdUI/colibri.png')
+    img = Image.open('/home/t0r120/bioScripts/hummingBirdUI/img/colibri.png')
 
     # Mostrarla en la app
     html_img = st.image(img, caption="Descripción de la imagen", width=500)

@@ -110,7 +110,6 @@ if 'indice_especie' not in st.session_state:
         # Buscamos dónde está esa especie en la lista COMPLETAstrea
         if ultima_especie in lista_especies:
             idx_reanudar = lista_especies.index(ultima_especie) + 1
-
             # Prevención por si ya terminaste toda la lista
             if idx_reanudar >= total_especies:
                 idx_reanudar = total_especies - 1
@@ -157,7 +156,17 @@ with col_visor:
         cols_fotos = st.columns(len(URLs_fotos))
         for idx, url in enumerate(URLs_fotos):
             with cols_fotos[idx]:
-                st.image(url, width='stretch', caption=f"Evidencia {idx + 1}")
+                # --- BLOQUE DE SEGURIDAD (TRY-EXCEPT) ---
+                try:
+                    # Intentamos renderizar la imagen normalmente
+                    st.image(url, use_container_width=True, caption=f"Evidencia {idx + 1}")
+                except Exception as e:
+                    # Si Pillow o Streamlit fallan (ej. URL rota), capturamos el error
+                    st.error(f"⚠️ Error al cargar imagen {idx + 1}")
+                    # Opcional: st.caption(f"Detalle: {str(e)}") # Para debug avanzado
+                    # Mostramos un marcador de posición gris para no romper el layout
+                    st.warning("URL rota o inválida.")
+                # -----------------------------------------
     else:
         st.warning("No hay fotos en grado de investigación para esta especie.")
 

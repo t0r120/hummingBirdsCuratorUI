@@ -7,13 +7,27 @@ from datetime import datetime
 from PIL import Image
 from pathlib import Path
 
+
+# ==============================================================================
+# PROJECT: Trochilidae Knowledge Graph (TKG)
+# STEP 04: Interactive data curator
+# Input files:
+# if there_is_species_range:
+#   -> tkg_hummingbirds_research_grade_193_383.csv"
+#   -> color_dictionary_hbw_wikidata.csv
+# else:
+#   -> tkg_hummingbirds_research_grade.csv"
+#   -> color_dictionary_hbw_wikidata.csv
+# SYSTEM ARCHITECT: Isra | BIO-CURATION LEAD: Layla
+# ==============================================================================
+
 # ============================
-# Configuración inicial de la página
+# Initial setup
 # ============================
 st.set_page_config(page_title="Curador Visual TKG", layout="wide")
 
 # ============================
-# Registro del curador (Sidebar)
+# Curator user data
 # ============================
 with st.sidebar:
     st.header("👤 Sesión de Curaduría")
@@ -28,7 +42,7 @@ with st.sidebar:
     st.caption(f"Guardando en: {ARCHIVO_SALIDA}")
 
 # ==========================================
-# 1. CARGA Y PROCESAMIENTO DE DATOS
+# 1. LOAD AND DATA PROCESSING
 # ==========================================
 DIRECTORIO_ACTUAL = Path(__file__).parent
 RAIZ_PROYECTO = DIRECTORIO_ACTUAL.parent
@@ -69,10 +83,10 @@ def cargar_datos():
 
     df_colors['display'] = df_colors['color_name'] + " [" + df_colors['wikidata_qid'].astype(str) + "]"
 
-    # 4. Filtro Inteligente del Lote
+    # 4. batch filtering
     especies_unicas = list(df_obs_full['scientific_name'].unique())
 
-    # Asegúrate de que este CSV inicial exista, si no, generará un error
+    #
     try:
         especie_historial = pd.read_csv('data/TKG_Curation_Progress_193_383.csv')
         nombre_inicio_lote = especie_historial['scientific_name'].iat[0]
@@ -99,11 +113,11 @@ total_especies = len(lista_especies)
 
 
 # ==========================================
-# 2. GESTIÓN DE ESTADO (MEMORIA Y AUTOGUARDADO)
+# 2. MEMORY STATE MANAGEMENT (AUTOSAVE)
 # ==========================================
 if 'indice_especie' not in st.session_state:
     try:
-        # Leemos el historial
+        # Read historial
         especie_historial = pd.read_csv(ARCHIVO_SALIDA)
         ultima_especie = especie_historial['scientific_name'].iat[-1]
 
@@ -139,7 +153,7 @@ def especie_anterior():
 
 
 # ==========================================
-# 3. INTERFAZ DE USUARIO (UX OPTIMIZADO)
+# 3. USER INTERFACE (UX OPTIMIZADO)
 # ==========================================
 
 especie_actual = lista_especies[st.session_state.indice_especie]
@@ -179,7 +193,7 @@ with st.sidebar:
     html_colores += "</div>"
     components.html(html_colores, height=400, scrolling=True)
 
-# --- ÁREA PRINCIPAL: VISOR Y FORMULARIO ---
+# --- MAIN SECTION ---
 col_visor, col_preguntas = st.columns([1.5, 1], gap="large")
 
 with col_visor:
@@ -187,7 +201,8 @@ with col_visor:
     st.write(datos_especie.head(3))
     st.progress((st.session_state.indice_especie + 1) / total_especies)
     st.caption(f"Progreso: Especie {st.session_state.indice_especie + 1} de {total_especies}")
-
+    if st.session_state.indice_especie == 174:
+        st.markdown(f'HAZ CURADO TODAS LAS ESPECIES 🐦!!! {st.session_state.indice_especie}')
     URLs_fotos = datos_especie['image_url'].tolist()[:3]
 
     if URLs_fotos:
@@ -200,14 +215,14 @@ with col_visor:
         st.warning("No hay fotos en grado de investigación para esta especie.")
 
     st.write("---")
-    # Botones de navegación fluidos
+    # NAV BUTTONS
     c1, c2 = st.columns(2)
     with c1:
         st.button("⬅️ Anterior", on_click=especie_anterior, use_container_width=True)
     with c2:
         st.button("Siguiente ➡️", on_click=especie_siguiente, use_container_width=True)
 
-    # Imagen de anatomía renderizada dinámicamente y responsiva
+    # ANATOMY IMAGE REFERENCE
     try:
         RUTA_IMAGEN = RAIZ_PROYECTO / 'img' / 'colibri.png'
         img = Image.open(RUTA_IMAGEN)
@@ -243,7 +258,7 @@ with col_preguntas:
                                           "Mínima: Oclusión significativa"])
 
         submit = st.form_submit_button("💾 Guardar Especie", use_container_width=True)
-
+        # SCORE
         if submit:
             puntos = 0
             if q1.startswith("Alta"):
@@ -281,5 +296,5 @@ with col_preguntas:
             st.success(f"¡Guardado! (Score: {confianza_final}/5)")
 
 # ==========================================
-# =                                        =
+# =               END                      =
 # ==========================================

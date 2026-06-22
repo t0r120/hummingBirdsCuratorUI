@@ -97,7 +97,7 @@ If you use this pipeline or dataset, please cite:
 ## Authors
  
 - **[Israel Muñoz-Velasco]** — Project Lead, Bio-curation & Annotation Lead — *[National Autonomous University of Mexico (UNAM)]*
-- **[Layla Michán Aguirre]** — Project Lead, Bio-curation & Annotation Lead — *[National Autonomous University of Mexico (UNAM)]*
+- **[Layla Michán-Aguirre]** — Project Lead, Bio-curation & Annotation Lead — *[National Autonomous University of Mexico (UNAM)]*
 ## License
  
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
